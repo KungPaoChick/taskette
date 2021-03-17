@@ -47,7 +47,8 @@ def write_task(data):
                 print(colorama.Fore.RED,
                         f'[!!] {username} is not recognizable',
                         colorama.Style.RESET_ALL)
-
+                break
+            
             if day in element['tasks']:
                 if len(element['tasks'][day]) >= 1:
                     element['tasks'][day][task] = time
