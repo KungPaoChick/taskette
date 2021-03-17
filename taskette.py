@@ -40,12 +40,12 @@ def write_task(data):
 
     with open('tasks.json', 'w') as f_data:
         for element in source['resources']:
-            if not element['user']['username'] == username.capitalize():
+            if element['user']['username'] == '':
+                element['user']['username'] = username                
+            elif not element['user']['username'] == username.capitalize():
                 print(colorama.Fore.RED,
                         f'[!! {username} is not recognizable',
                         colorama.Style.RESET_ALL)
-            else:
-                element['user']['username'] = username.capitalize()
 
             if day in element['tasks']:
                 if len(element['tasks'][day]) >= 1:
