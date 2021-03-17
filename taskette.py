@@ -26,15 +26,13 @@ def write_json():
 
 def write_task(data):
     task = data[0]
-    day = data[1]
+    day = data[1].capitalize()
     time = data[2]
     username = data[3]
 
     if '-' in task:
         formatting = [x.capitalize() for x in task.split('-')]
         task = ' '.join(formatting)
-    else:
-        task = task.capitalize()
 
     with open('tasks.json') as j_source:
         source = json.load(j_source)
@@ -90,7 +88,7 @@ def remove_task(task, day):
             formatting = [x.capitalize() for x in task.split('-')]
             task = ' '.join(formatting)
         else:
-            task = task.capitalize()
+            day.capitalize()
 
         for element in source['resources']:
             if task in element['tasks'][day]:
@@ -108,10 +106,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description='List Tasks, View Tasks for the day or week.')
 
-    parser.add_argument("-mk", "--maketask",
+    parser.add_argument("-mt", "--maketask",
                         nargs=4, metavar='maketask',
                         action="store",
-                        help="Creates one task for the current day. (e.g -mk Buy-Milk Monday 5:30pm Kungger)")
+                        help="Creates one task for the current day. (e.g -mt 'Buy Some Eggs' Monday 5:30pm Kungger)")
 
     parser.add_argument("-vt", "--viewtask",
                         nargs=2, metavar='viewtask',
@@ -125,7 +123,7 @@ if __name__ == '__main__':
     parser.add_argument("-rt", "--removetask",
                         nargs=2, metavar='removetasks',
                         action='store',
-                        help="Remove a specific task in a specific day. (e.g -rt watch-movies friday)")
+                        help="Remove a specific task in a specific day. (e.g -rt 'Watch Movies' Friday)")
 
     args = parser.parse_args()
     
