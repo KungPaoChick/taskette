@@ -48,7 +48,7 @@ def write_task(data):
                         f'[!!] {username} is not recognizable',
                         colorama.Style.RESET_ALL)
                 break
-            
+
             if day in element['tasks']:
                 if len(element['tasks'][day]) >= 1:
                     element['tasks'][day][task] = time
@@ -81,6 +81,24 @@ def view_tasks(day, username):
                         colorama.Style.RESET_ALL)
 
 
+def remove_task(task, day):
+    with open('tasks.json') as j_source:
+        source = json.load(j_source)
+
+    with open('tasks.json', 'w') as f_source:
+        if '-' in task:
+            formatting = [x.capitalize() for x in task.split('-')]
+            task = ' '.join(formatting)
+        else:
+            task = task.capitalize()
+
+        for element in source['resources']:
+            if task in element['tasks'][day]:
+                del element['tasks'][day][task]
+
+        json.dump(source, f_source, indent=2)
+
+
 def plural_s(v):
     return 's' if not abs(v) == 1 else ''
 
@@ -104,6 +122,11 @@ if __name__ == '__main__':
                         action='store_true',
                         help="Deletes all tasks for the week.")
 
+    parser.add_argument("-rt", "--removetask",
+                        nargs=2, metavar='removetasks',
+                        action='store',
+                        help="Remove a specific task in a specific day. (e.g -rt watch-movies friday)")
+
     args = parser.parse_args()
     
     if not os.path.exists('tasks.json'):
@@ -122,3 +145,7 @@ if __name__ == '__main__':
             print(colorama.Fore.GREEN,
                     '[*] Reset has been Successful.',
                     colorama.Style.RESET_ALL)
+    
+    if args.removetask:
+        info = [x.capitalize() for x in args.removetask]
+        remove_task(info[0], info[1])
