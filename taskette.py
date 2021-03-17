@@ -35,30 +35,49 @@ def write_task(data):
         task = ' '.join(formatting)
     else:
         task = task.capitalize()
-        
+
     with open('tasks.json') as j_source:
         source = json.load(j_source)
 
     with open('tasks.json', 'w') as f_data:
         for element in source['resources']:
-            element['user']['username'] = username
+            if not element['user']['username'] == username.capitalize():
+                print(colorama.Fore.RED,
+                        f'[!! {username} is not recognizable',
+                        colorama.Style.RESET_ALL)
+            else:
+                element['user']['username'] = username.capitalize()
+
             if day in element['tasks']:
-                element['tasks'][day] = {task:time}
+                if len(element['tasks'][day]) >= 1:
+                    element['tasks'][day][task] = time
+                else:
+                    element['tasks'][day] = {task:time}
+            
 
         json.dump(source, f_data, indent=2)
 
 
-def view_tasks(day):
+def view_tasks(day, username):
     with open('tasks.json') as j_source:
         source = json.load(j_source)
 
     for element in source['resources']:
-        if not element['tasks'][day] == {}:
-            for data in element['tasks'][day]:
-                print(f'Task: {data}\nTime: {element["tasks"][day][data]}')
+        if not element['user']['username'] == username:
+            print(colorama.Fore.RED,
+                        f'[!!] {username} is not recognizable',
+                        colorama.Style.RESET_ALL)
         else:
-            print(colorama.Fore.YELLOW,
-                    f'[*] No Available Tasks in {day}')
+            if not element['tasks'][day] == {}:
+                print(colorama.Fore.YELLOW,
+                        f'[!] You have {len(element["tasks"][day])} Tasks for {day}',
+                        colorama.Style.RESET_ALL)
+                for data in element['tasks'][day]:            
+                    print(f'Task: {data}\nTime: {element["tasks"][day][data]}\n')
+            else:
+                print(colorama.Fore.YELLOW,
+                        f'[!] No Available Tasks in {day}',
+                        colorama.Style.RESET_ALL)
 
 
 if __name__ == '__main__':
@@ -72,9 +91,9 @@ if __name__ == '__main__':
                         help="Creates one task for the current day. (e.g -mk Buy-Milk Monday 5:30pm Kungger)")
 
     parser.add_argument("-vt", "--viewtask",
-                        nargs=1, metavar='viewtask',
+                        nargs=2, metavar='viewtask',
                         action="store",
-                        help="Views tasks for the day. (e.g -vt Wednesday)")
+                        help="Views tasks for the day. (e.g -vt Wednesday Kungger)")
     
     args = parser.parse_args()
     
@@ -86,5 +105,5 @@ if __name__ == '__main__':
         write_task(info)
     
     if args.viewtask:
-        for day in args.viewtask:
-            view_tasks(day.capitalize())
+        info = [x.capitalize() for x in args.viewtask]
+        view_tasks(info[0], info[1])
