@@ -21,6 +21,7 @@ def write_json():
             }
         })
         json.dump(data_set, j_file, indent=2)
+    return True
 
 
 def write_task(data):
@@ -40,9 +41,10 @@ def write_task(data):
 
     with open('tasks.json', 'w') as f_data:
         for element in source['resources']:
-            if element['user']['username'] == '':
-                element['user']['username'] = username                
-            elif not element['user']['username'] == username.capitalize():
+            j_username = element['user']['username']
+            if j_username == '':
+                j_username = username                
+            elif not j_username == username.capitalize():
                 print(colorama.Fore.RED,
                         f'[!! {username} is not recognizable',
                         colorama.Style.RESET_ALL)
@@ -98,6 +100,10 @@ if __name__ == '__main__':
                         action="store",
                         help="Views tasks for the day. (e.g -vt Wednesday Kungger)")
     
+    parser.add_argument("-r", "--reset",
+                        action='store_true',
+                        help="Deletes all tasks for the week.")
+
     args = parser.parse_args()
     
     if not os.path.exists('tasks.json'):
@@ -110,3 +116,9 @@ if __name__ == '__main__':
     if args.viewtask:
         info = [x.capitalize() for x in args.viewtask]
         view_tasks(info[0], info[1])
+
+    if args.reset:
+        if write_json():
+            print(colorama.Fore.GREEN,
+                    '[*] Reset has been Successful.',
+                    colorama.Style.RESET_ALL)
