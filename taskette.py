@@ -1,4 +1,3 @@
-from importlib.resources import path
 import os
 import json
 import argparse
@@ -54,7 +53,6 @@ def write_task(data):
                 else:
                     element['tasks'][day] = {task:time}
             
-
         json.dump(source, f_data, indent=2)
 
 
@@ -69,8 +67,9 @@ def view_tasks(day, username):
                         colorama.Style.RESET_ALL)
         else:
             if not element['tasks'][day] == {}:
+                tasks = len(element["tasks"][day])
                 print(colorama.Fore.YELLOW,
-                        f'[!] You have {len(element["tasks"][day])} Tasks for {day}',
+                        f'[!] You have {tasks} Task{plural_s(tasks)} for {day}',
                         colorama.Style.RESET_ALL)
                 for data in element['tasks'][day]:            
                     print(f'Task: {data}\nTime: {element["tasks"][day][data]}\n')
@@ -78,6 +77,10 @@ def view_tasks(day, username):
                 print(colorama.Fore.YELLOW,
                         f'[!] No Available Tasks in {day}',
                         colorama.Style.RESET_ALL)
+
+
+def plural_s(v):
+    return 's' if not abs(v) == 1 else ''
 
 
 if __name__ == '__main__':
